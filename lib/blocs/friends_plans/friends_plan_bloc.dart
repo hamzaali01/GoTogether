@@ -13,28 +13,20 @@ class FriendsPlanBloc extends Bloc<FriendsPlanEvent, FriendsPlanState> {
       try {
         final plans = await PlansRepository()
             .getFriendsPlans(event.userId, event.tabType);
-        emit(LoadedState(plans));
+        emit(LoadedState(plans, ""));
       } catch (e) {
         emit(ErrorState('Failed to fetch friends\' plans: $e'));
       }
     });
     on<UpdatePlanStatusEvent>((event, emit) async {
       emit(LoadingState());
-
+      String status = await PlansRepository()
+          .updatePlanStatus(event.userId, event.planId, event.changeTo);
       try {
-        await PlansRepository()
-            .updatePlanStatus(event.userId, event.planId, event.changeTo);
-
-        // String getType;
-        // if (event.changeTo == "DeclinedPlans") {
-        //   getType = "ApprovedPlans";
-        // } else {
-        //   getType = "DeclinedPlans";
-        // }
         final plans = await PlansRepository()
             .getFriendsPlans(event.userId, event.tabType);
 
-        emit(LoadedState(plans));
+        emit(LoadedState(plans, status));
       } catch (e) {
         emit(ErrorState('Failed to fetch friends\' plans: $e'));
       }

@@ -83,9 +83,9 @@ class UserRepository {
           'friends': FieldValue.arrayUnion([uid])
         });
 
-        return "Success";
+        return "Friend Added Successfully";
       } else {
-        return "Not Found";
+        return "Friend Not Found";
       }
     } catch (e) {
       return "Error";

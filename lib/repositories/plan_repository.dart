@@ -47,54 +47,63 @@ class PlansRepository {
     return pendingPlanDocs;
   }
 
-  Future<void> updatePlanStatus(
+  Future<String> updatePlanStatus(
       String uid, String planId, String status) async {
-    final userDoc = usersCollection.doc(uid);
+    try {
+      final userDoc = usersCollection.doc(uid);
 
-    await userDoc.update({
-      'plans.PendingPlans': FieldValue.arrayRemove([planId])
-    });
-
-    if (status != '') {
       await userDoc.update({
-        'plans.$status': FieldValue.arrayUnion([planId])
+        'plans.PendingPlans': FieldValue.arrayRemove([planId])
       });
+
+      if (status != '') {
+        await userDoc.update({
+          'plans.$status': FieldValue.arrayUnion([planId])
+        });
+      }
+
+      if (status == "ApprovedPlans") {
+        await userDoc.update({
+          'plans.DeclinedPlans': FieldValue.arrayRemove([planId])
+        });
+      } else if (status == "DeclinedPlans") {
+        await userDoc.update({
+          'plans.ApprovedPlans': FieldValue.arrayRemove([planId])
+        });
+      } else if (status == "") {
+        await userDoc.update({
+          'plans.ApprovedPlans': FieldValue.arrayRemove([planId])
+        });
+        await userDoc.update({
+          'plans.DeclinedPlans': FieldValue.arrayRemove([planId])
+        });
+      }
+
+      final planDoc = plansCollection.doc(planId);
+      final plan = await planDoc.get();
+      final invited = plan['Invited'];
+
+      invited['Pending'].remove(uid);
+      invited['Approved'].remove(uid);
+      invited['Declined'].remove(uid);
+
+      if (status == "ApprovedPlans")
+        invited['Approved'].add(uid);
+      else if (status == "DeclinedPlans") invited['Declined'].add(uid);
+
+      await planDoc.update({'Invited': invited});
+
+      //final updatedPlanSnapshot = await planDoc.get();
+
+      //return updatedPlanSnapshot;
+      if (status == "ApprovedPlans") {
+        return "Added Plan to Approved Plans";
+      } else {
+        return "Added Plan to Declined Plans";
+      }
+    } catch (e) {
+      return e.toString();
     }
-
-    if (status == "ApprovedPlans") {
-      await userDoc.update({
-        'plans.DeclinedPlans': FieldValue.arrayRemove([planId])
-      });
-    } else if (status == "DeclinedPlans") {
-      await userDoc.update({
-        'plans.ApprovedPlans': FieldValue.arrayRemove([planId])
-      });
-    } else if (status == "") {
-      await userDoc.update({
-        'plans.ApprovedPlans': FieldValue.arrayRemove([planId])
-      });
-      await userDoc.update({
-        'plans.DeclinedPlans': FieldValue.arrayRemove([planId])
-      });
-    }
-
-    final planDoc = plansCollection.doc(planId);
-    final plan = await planDoc.get();
-    final invited = plan['Invited'];
-
-    invited['Pending'].remove(uid);
-    invited['Approved'].remove(uid);
-    invited['Declined'].remove(uid);
-
-    if (status == "ApprovedPlans")
-      invited['Approved'].add(uid);
-    else if (status == "DeclinedPlans") invited['Declined'].add(uid);
-
-    await planDoc.update({'Invited': invited});
-
-    //final updatedPlanSnapshot = await planDoc.get();
-
-    //return updatedPlanSnapshot;
   }
 
   Future<String> createPlan(
@@ -170,9 +179,9 @@ class PlansRepository {
 
         userDoc.reference.update({'plans': plans});
       });
-      return "Success";
+      return "Successfully Deleted Plan";
     } catch (e) {
-      print(e.toString());
+      //  print(e.toString());
       return e.toString();
     }
   }

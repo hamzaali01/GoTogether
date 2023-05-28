@@ -223,8 +223,8 @@ class PlanDetailsDialog extends StatelessWidget {
                                   onPressed: () async {
                                     bloc!.add(DeletePlanEvent(
                                         Auth().currentUser!.uid, planId));
-                                    GlobalSnackbar.show(
-                                        context, "Deleted Plan");
+                                    // GlobalSnackbar.show(
+                                    //     context, "Deleted Plan");
                                     Navigator.of(_dialogKey.currentContext!)
                                         .pop();
                                     Navigator.of(context).pop();

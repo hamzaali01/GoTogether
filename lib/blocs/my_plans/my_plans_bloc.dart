@@ -12,7 +12,7 @@ class MyPlansBloc extends Bloc<MyPlansEvent, MyPlansState> {
       emit(LoadingState());
       try {
         final plans = await PlansRepository().getPlansByUid(event.userId);
-        emit(LoadedState(plans));
+        emit(LoadedState(plans, ""));
       } catch (e) {
         emit(ErrorState('Failed to fetch friends\' plans: $e'));
       }
@@ -20,15 +20,20 @@ class MyPlansBloc extends Bloc<MyPlansEvent, MyPlansState> {
     on<DeletePlanEvent>((event, emit) async {
       emit(LoadingState());
 
+      // try {
+      String status =
+          await PlansRepository().deletePlanAndRemoveFromUsers(event.planId);
       try {
-        String status =
-            await PlansRepository().deletePlanAndRemoveFromUsers(event.planId);
-        print(status);
         final plans = await PlansRepository().getPlansByUid(event.userId);
-        emit(LoadedState(plans));
+        emit(LoadedState(plans, status));
       } catch (e) {
-        emit(ErrorState('Failed to fetch delete\' plans: $e'));
+        // emit(LoadedState([], e.toString()));
+        emit(ErrorState('Failed to fetch friends\' plans: $e'));
       }
+
+      // } catch (e) {
+      //   emit(ErrorState('Failed to fetch delete\' plans: $e'));
+      // }
     });
   }
 }

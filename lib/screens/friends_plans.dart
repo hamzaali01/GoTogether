@@ -128,6 +128,11 @@ class _PlansState extends State<Plans> {
         } else if (state is LoadedState) {
           final plans = state.plans;
           //print(plans.length);
+          if (state.status != "") {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              GlobalSnackbar.show(context, state.status);
+            });
+          }
 
           if (plans.length == 0) {
             return Center(

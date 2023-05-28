@@ -18,11 +18,12 @@ class LoadingState extends MyPlansState {
 
 class LoadedState extends MyPlansState {
   final List<dynamic> plans;
+  final String status;
 
-  const LoadedState(this.plans);
+  const LoadedState(this.plans, this.status);
 
   @override
-  List<Object> get props => [plans];
+  List<Object> get props => [plans, status];
 }
 
 class ErrorState extends MyPlansState {
