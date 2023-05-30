@@ -25,7 +25,9 @@ class _MyFriendsState extends State<MyFriends> {
     return BlocProvider(
       create: (context) => MyFriendsBloc()..add(GetMyFriendsEvent(widget.uid)),
       child: Scaffold(
-        drawer: MyDrawer(),
+        drawer: MyDrawer(
+          uid: widget.uid,
+        ),
         appBar: AppBar(
           title: Text("My Friends"),
           centerTitle: true,

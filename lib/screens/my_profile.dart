@@ -13,7 +13,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MyProfile extends StatefulWidget {
-  MyProfile({super.key});
+  final String uid;
+  MyProfile({super.key, required this.uid});
 
   @override
   State<MyProfile> createState() => _MyProfileState();
@@ -78,9 +79,11 @@ class _MyProfileState extends State<MyProfile> {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _imageFile = File(pickedFile!.path);
-    });
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
 
     final userId = Auth().currentUser!.uid;
     await _uploadImage(userId);
@@ -121,9 +124,12 @@ class _MyProfileState extends State<MyProfile> {
         title: const Text("My Profile"),
         centerTitle: true,
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(
+        uid: widget.uid,
+      ),
       body: FutureBuilder(
-        future: UserRepository().getUserById(user!.uid),
+        future: UserRepository(firestore: FirebaseFirestore.instance)
+            .getUserById(user!.uid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());

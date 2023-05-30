@@ -38,6 +38,12 @@ class _FriendsPlansState extends State<FriendsPlans>
     //     .add(GetFriendsPlansEvent(Auth().currentUser!.uid, 'Pending'));
   }
 
+  @override
+  void dispose() {
+    _tabController.dispose(); // Dispose the TabController and its Ticker
+    super.dispose();
+  }
+
   TabBar get _tabBar => TabBar(
         controller: _tabController,
         tabs: const <Widget>[
@@ -69,9 +75,9 @@ class _FriendsPlansState extends State<FriendsPlans>
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => FriendsPlanBloc()
-        ..add(GetFriendsPlansEvent(Auth().currentUser!.uid, 'PendingPlans')),
+        ..add(GetFriendsPlansEvent(widget.uid, 'PendingPlans')),
       child: Scaffold(
-          drawer: MyDrawer(),
+          drawer: MyDrawer(uid: widget.uid),
           backgroundColor: Colors.purple, //Color.fromARGB(255, 56, 12, 12),
           appBar: AppBar(
             title: Text("Friends Plans"),
@@ -106,7 +112,7 @@ class _PlansState extends State<Plans> {
     super.initState();
     final friendsPlanBloc = BlocProvider.of<FriendsPlanBloc>(context);
     friendsPlanBloc.add(GetFriendsPlansEvent(
-      Auth().currentUser!.uid,
+      widget.uid,
       widget.type,
     ));
   }
@@ -247,54 +253,68 @@ class _PlansState extends State<Plans> {
                         SizedBox(
                           height: 7,
                         ),
-                        Text("Invited: " + Invited.toString()),
-                        Text(
-                          "Approved: " + Approved.toString(),
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 53, 255, 60),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "Declined: " + Declined.toString(),
-                          style: TextStyle(
-                              color: Colors.red, fontWeight: FontWeight.bold),
-                        ),
+                        if (plan?['Public'].toString() == "true")
+                          Text(
+                            "Public Event \nPeople Going: " +
+                                Approved.toString(),
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                fontWeight: FontWeight.bold),
+                          ),
+
+                        if (plan?['Public'].toString() == "false")
+                          Text("Invited: " + Invited.toString()),
+                        if (plan?['Public'].toString() == "false")
+                          Text(
+                            "Approved: " + Approved.toString(),
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 53, 255, 60),
+                                fontWeight: FontWeight.bold),
+                          ),
+                        if (plan?['Public'].toString() == "false")
+                          Text(
+                            "Declined: " + Declined.toString(),
+                            style: TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.bold),
+                          ),
                         SizedBox(
                           height: 7,
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 35, 206, 41)),
-                              onPressed: () async {
-                                BlocProvider.of<FriendsPlanBloc>(context).add(
-                                    UpdatePlanStatusEvent(
-                                        Auth().currentUser!.uid,
-                                        planId,
-                                        "ApprovedPlans",
-                                        widget.type));
-                                GlobalSnackbar.show(context, "Updating");
-                              },
-                              child: Text('Approve'),
-                            ),
+                            if (widget.type != "ApprovedPlans")
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Color.fromARGB(255, 35, 206, 41),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)))),
+                                onPressed: () async {
+                                  BlocProvider.of<FriendsPlanBloc>(context).add(
+                                      UpdatePlanStatusEvent(widget.uid, planId,
+                                          "ApprovedPlans", widget.type));
+                                  GlobalSnackbar.show(context, "Updating");
+                                },
+                                child: Text('Approve'),
+                              ),
                             SizedBox(width: 8.0),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red),
-                              onPressed: () async {
-                                BlocProvider.of<FriendsPlanBloc>(context).add(
-                                    UpdatePlanStatusEvent(
-                                        Auth().currentUser!.uid,
-                                        planId,
-                                        "DeclinedPlans",
-                                        widget.type));
-                                GlobalSnackbar.show(context, "Updating");
-                              },
-                              child: Text('Decline'),
-                            ),
+                            if (widget.type != "DeclinedPlans")
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)))),
+                                onPressed: () async {
+                                  BlocProvider.of<FriendsPlanBloc>(context).add(
+                                      UpdatePlanStatusEvent(widget.uid, planId,
+                                          "DeclinedPlans", widget.type));
+                                  GlobalSnackbar.show(context, "Updating");
+                                },
+                                child: Text('Decline'),
+                              ),
                           ],
                         ),
 
@@ -307,10 +327,14 @@ class _PlansState extends State<Plans> {
                       ],
                     ),
                     onTap: () async {
-                      UserRepository().getUserById(creator).then((data) async {
+                      UserRepository(firestore: FirebaseFirestore.instance)
+                          .getUserById(creator)
+                          .then((data) async {
                         dynamic creatorData = data.data();
                         List<DocumentSnapshot> friendDocs =
-                            await UserRepository().getFriendsByUid(creator);
+                            await UserRepository(
+                                    firestore: FirebaseFirestore.instance)
+                                .getFriendsByUid(creator);
                         final PendingIDs = plan?['Invited']['Pending'];
                         final ApprovedIDs = plan?['Invited']['Approved'];
                         final DeclinedIDs = plan?['Invited']['Declined'];
@@ -330,6 +354,10 @@ class _PlansState extends State<Plans> {
                           if (DeclinedIDs.contains(friendDoc.id)) {
                             String friendName = friendDoc['name'];
                             DeclinedNames.add(friendName);
+                          }
+
+                          if (plan?['Public'].toString() == "true") {
+                            ApprovedNames = ApprovedIDs;
                           }
                         }
                         showDialog(

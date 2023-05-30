@@ -14,9 +14,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../blocs/friends_plans/friends_plan_bloc.dart';
 
 class MyDrawer extends StatelessWidget {
+  final uid;
+  MyDrawer({required this.uid});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      key: Key("MyDrawer"),
       width: 240,
       child: ListView(
         padding: EdgeInsets.zero,
@@ -46,7 +50,7 @@ class MyDrawer extends StatelessWidget {
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
               onTap: () {
-                Get.to(MyProfile());
+                Get.to(MyProfile(uid: uid));
                 //Navigator.pop(context);
                 // Handle item 1 tap
               },

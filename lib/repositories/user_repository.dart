@@ -6,8 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:random_string/random_string.dart';
 
 class UserRepository {
-  final CollectionReference usersCollection =
-      FirebaseFirestore.instance.collection('users');
+  UserRepository({required this.firestore});
+
+  final FirebaseFirestore firestore;
+  CollectionReference get usersCollection => firestore.collection('users');
+
+  // final CollectionReference usersCollection =
+  //     FirebaseFirestore.instance.collection('users');
 
   Future<List<DocumentSnapshot>> getFriendsByUid(String uid) async {
     final userDoc = await usersCollection.doc(uid).get();
@@ -27,7 +32,10 @@ class UserRepository {
   Future<void> createUser({required user, required name}) async {
     try {
       String username = await generateUniqueUsername();
-      await user!.updateDisplayName(name);
+      if (user!.uid != "test_uid") {
+        await user!.updateDisplayName(name);
+      }
+
       await usersCollection.doc(user!.uid).set({
         'name': name,
         'username': username,
@@ -64,11 +72,10 @@ class UserRepository {
 
   Future<String> addFriend(String friend_username, String uid) async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .where('username', isEqualTo: friend_username)
-              .get();
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await firestore
+          .collection('users')
+          .where('username', isEqualTo: friend_username)
+          .get();
 
       if (querySnapshot.size == 1) {
         final friendUid = querySnapshot.docs[0].id;

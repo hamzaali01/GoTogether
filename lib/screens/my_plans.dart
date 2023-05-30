@@ -34,10 +34,9 @@ class _MyPlansState extends State<MyPlans> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          MyPlansBloc()..add(GetMyPlansEvent(Auth().currentUser!.uid)),
+      create: (context) => MyPlansBloc()..add(GetMyPlansEvent(widget.uid)),
       child: Scaffold(
-        drawer: MyDrawer(),
+        drawer: MyDrawer(uid: widget.uid),
         appBar: AppBar(
           title: Text("My Plans"),
           centerTitle: true,
@@ -197,12 +196,14 @@ class _MyPlansState extends State<MyPlans> {
                             ],
                           ),
                           onTap: () async {
-                            UserRepository()
+                            UserRepository(
+                                    firestore: FirebaseFirestore.instance)
                                 .getUserById(creator)
                                 .then((data) async {
                               dynamic creatorData = data.data();
                               List<DocumentSnapshot> friendDocs =
-                                  await UserRepository()
+                                  await UserRepository(
+                                          firestore: FirebaseFirestore.instance)
                                       .getFriendsByUid(creator);
                               final PendingIDs = plan?['Invited']['Pending'];
                               final ApprovedIDs = plan?['Invited']['Approved'];

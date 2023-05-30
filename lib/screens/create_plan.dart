@@ -1,10 +1,10 @@
 import 'package:firebase_proj/screens/my_plans.dart';
 import 'package:firebase_proj/widgets/widgets.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:get/get.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:firebase_proj/repositories/user_repository.dart';
@@ -47,15 +47,17 @@ class _CreatePlanState extends State<CreatePlan> {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             GlobalSnackbar.show(context, 'Creating Plan');
-            String status = await PlansRepository().createPlan(
-                Auth().currentUser!.uid,
-                _controllerTitle.text,
-                _controllerLocation.text,
-                mapLocation,
-                _controllerDescription.text,
-                _selectedDateTime.toString(),
-                isPublic.toString(),
-                _selectedFriends);
+            String status =
+                await PlansRepository(firestore: FirebaseFirestore.instance)
+                    .createPlan(
+                        Auth().currentUser!.uid,
+                        _controllerTitle.text,
+                        _controllerLocation.text,
+                        mapLocation,
+                        _controllerDescription.text,
+                        _selectedDateTime.toString(),
+                        isPublic.toString(),
+                        _selectedFriends);
             if (status == "Success") {
               Get.to(MyPlans(uid: Auth().currentUser!.uid));
               GlobalSnackbar.show(context, 'Plan Created Successfully');
@@ -234,7 +236,8 @@ class _CreatePlanState extends State<CreatePlan> {
           SizedBox(height: 16),
           if (!isPublic!)
             FutureBuilder<List<DocumentSnapshot>>(
-              future: UserRepository().getFriendsByUid(Auth().currentUser!.uid),
+              future: UserRepository(firestore: FirebaseFirestore.instance)
+                  .getFriendsByUid(Auth().currentUser!.uid),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();

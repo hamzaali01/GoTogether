@@ -86,8 +86,9 @@ class _LoginPageState extends State<LoginPage> {
     return const Text('Firebase Auth');
   }
 
-  Widget _entryField(String title, TextEditingController controller) {
+  Widget _entryField(String title, TextEditingController controller, Key key) {
     return TextField(
+      key: key,
       controller: controller,
       decoration: InputDecoration(
         labelText: title,
@@ -105,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _submitButton() {
     return ElevatedButton(
+        key: Key("SubmitLogin"),
         onPressed: isLogin
             ? signInWithEmailAndPassword
             : createUserWithEmailAndPassword,
@@ -188,12 +190,14 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontSize: 30),
                 ),
               ),
-              _entryField('Email', _controllerEmail),
-              _entryField('Password', _controllerPassword),
+              _entryField('Email', _controllerEmail, Key("EnterEmail")),
+              _entryField(
+                  'Password', _controllerPassword, Key("EnterPassword")),
               if (!isLogin)
                 Column(children: [
-                  _entryField('Confirm Password', _controllerconfirmPassword),
-                  _entryField('Name', _controllerName)
+                  _entryField('Confirm Password', _controllerconfirmPassword,
+                      Key("EnterConfirmPassword")),
+                  _entryField('Name', _controllerName, Key("EnterName"))
                 ]),
               _errorMessage(),
               _submitButton(),

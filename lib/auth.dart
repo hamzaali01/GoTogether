@@ -42,7 +42,7 @@ class Auth {
 
     if (userCredential.additionalUserInfo!.isNewUser) {
       print('New user signed up with Google');
-      UserRepository()
+      UserRepository(firestore: FirebaseFirestore.instance)
           .createUser(user: user, name: googleSignInAccount.displayName);
     } else {
       print('Existing user logged in with Google');
@@ -58,7 +58,8 @@ class Auth {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     final user = userCredential.user;
-    await UserRepository().createUser(user: user, name: name);
+    await UserRepository(firestore: FirebaseFirestore.instance)
+        .createUser(user: user, name: name);
   }
 
   Future<void> signOut() async {

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../repositories/plan_repository.dart';
@@ -11,8 +12,9 @@ class FriendsPlanBloc extends Bloc<FriendsPlanEvent, FriendsPlanState> {
     on<GetFriendsPlansEvent>((event, emit) async {
       emit(LoadingState());
       try {
-        final plans = await PlansRepository()
-            .getFriendsPlans(event.userId, event.tabType);
+        final plans =
+            await PlansRepository(firestore: FirebaseFirestore.instance)
+                .getFriendsPlans(event.userId, event.tabType);
         emit(LoadedState(plans, ""));
       } catch (e) {
         emit(ErrorState('Failed to fetch friends\' plans: $e'));
@@ -20,11 +22,13 @@ class FriendsPlanBloc extends Bloc<FriendsPlanEvent, FriendsPlanState> {
     });
     on<UpdatePlanStatusEvent>((event, emit) async {
       emit(LoadingState());
-      String status = await PlansRepository()
-          .updatePlanStatus(event.userId, event.planId, event.changeTo);
+      String status =
+          await PlansRepository(firestore: FirebaseFirestore.instance)
+              .updatePlanStatus(event.userId, event.planId, event.changeTo);
       try {
-        final plans = await PlansRepository()
-            .getFriendsPlans(event.userId, event.tabType);
+        final plans =
+            await PlansRepository(firestore: FirebaseFirestore.instance)
+                .getFriendsPlans(event.userId, event.tabType);
 
         emit(LoadedState(plans, status));
       } catch (e) {

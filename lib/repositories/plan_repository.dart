@@ -8,11 +8,18 @@ import 'package:random_string/random_string.dart';
 import 'package:latlong2/latlong.dart';
 
 class PlansRepository {
-  final CollectionReference plansCollection =
-      FirebaseFirestore.instance.collection('plans');
+  PlansRepository({required this.firestore});
 
-  final CollectionReference usersCollection =
-      FirebaseFirestore.instance.collection('users');
+  final FirebaseFirestore firestore;
+
+  CollectionReference get plansCollection => firestore.collection('plans');
+  CollectionReference get usersCollection => firestore.collection('users');
+
+  // final CollectionReference plansCollection =
+  //     FirebaseFirestore.instance.collection('plans');
+
+  // final CollectionReference usersCollection =
+  //     FirebaseFirestore.instance.collection('users');
 
   Future<List<DocumentSnapshot>> getPlansByUid(String uid) async {
     final querySnapshot = await plansCollection
