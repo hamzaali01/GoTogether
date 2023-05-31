@@ -320,6 +320,7 @@ class _PublicPlansState extends State<PublicPlans> {
                             plans: displayedPlans,
                             index: index,
                             friendDocs: friendDocs,
+                            uid: widget.uid,
                           );
                         },
                       );

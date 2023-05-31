@@ -18,7 +18,8 @@ import 'package:latlong2/latlong.dart';
 
 class FriendsPlans extends StatefulWidget {
   final String uid;
-  FriendsPlans({required this.uid});
+  final FirebaseFirestore firestore;
+  FriendsPlans({required this.uid, required this.firestore});
 
   @override
   State<FriendsPlans> createState() => _FriendsPlansState();
@@ -74,7 +75,7 @@ class _FriendsPlansState extends State<FriendsPlans>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => FriendsPlanBloc()
+      create: (context) => FriendsPlanBloc(firestore: widget.firestore)
         ..add(GetFriendsPlansEvent(widget.uid, 'PendingPlans')),
       child: Scaffold(
           drawer: MyDrawer(uid: widget.uid),
@@ -378,6 +379,7 @@ class _PlansState extends State<Plans> {
                               plans: plans,
                               index: index,
                               friendDocs: friendDocs,
+                              uid: widget.uid,
                             );
                           },
                         );

@@ -19,7 +19,8 @@ import '../widgets/widgets.dart';
 
 class MyPlans extends StatefulWidget {
   final String uid;
-  MyPlans({required this.uid});
+  final FirebaseFirestore firestore;
+  MyPlans({required this.uid, required this.firestore});
 
   @override
   State<MyPlans> createState() => _MyPlansState();
@@ -34,7 +35,8 @@ class _MyPlansState extends State<MyPlans> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MyPlansBloc()..add(GetMyPlansEvent(widget.uid)),
+      create: (context) => MyPlansBloc(firestore: widget.firestore)
+        ..add(GetMyPlansEvent(widget.uid)),
       child: Scaffold(
         drawer: MyDrawer(uid: widget.uid),
         appBar: AppBar(
@@ -249,6 +251,7 @@ class _MyPlansState extends State<MyPlans> {
                                     plans: plans,
                                     index: index,
                                     friendDocs: friendDocs,
+                                    uid: widget.uid,
                                     bloc: bloc,
                                   );
                                 },
@@ -280,7 +283,7 @@ class _MyPlansState extends State<MyPlans> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Icon(Icons.add),
-                  Text("CREATE PLAN"),
+                  Expanded(child: Text("CREATE PLAN")),
                 ],
               ),
             ),

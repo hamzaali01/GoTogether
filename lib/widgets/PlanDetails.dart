@@ -26,6 +26,7 @@ class PlanDetailsDialog extends StatelessWidget {
   final dynamic plans;
   final dynamic index;
   final dynamic friendDocs;
+  final String uid;
 
   PlanDetailsDialog(
       {required this.title,
@@ -42,6 +43,7 @@ class PlanDetailsDialog extends StatelessWidget {
       required this.plans,
       required this.index,
       required this.friendDocs,
+      required this.uid,
       this.bloc});
 
   @override
@@ -80,9 +82,9 @@ class PlanDetailsDialog extends StatelessWidget {
                   ),
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(
-                      creatorData!["profilePictureUrl"],
-                    ),
+                    backgroundImage: creatorData!["profilePictureUrl"] != ""
+                        ? NetworkImage(creatorData!["profilePictureUrl"])
+                        : null,
                     child: creatorData!["profilePictureUrl"] == ""
                         ? Icon(Icons.person)
                         : null,
@@ -196,8 +198,7 @@ class PlanDetailsDialog extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              if (Auth().currentUser!.uid == plans[index].data()['creator'] &&
-                  bloc != null)
+              if (uid == plans[index].data()['creator'] && bloc != null)
                 Center(
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -221,8 +222,7 @@ class PlanDetailsDialog extends StatelessWidget {
                                 TextButton(
                                   child: Text('Delete'),
                                   onPressed: () async {
-                                    bloc!.add(DeletePlanEvent(
-                                        Auth().currentUser!.uid, planId));
+                                    bloc!.add(DeletePlanEvent(uid, planId));
                                     // GlobalSnackbar.show(
                                     //     context, "Deleted Plan");
                                     Navigator.of(_dialogKey.currentContext!)

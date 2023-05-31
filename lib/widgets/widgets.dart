@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_proj/screens/friends_plans.dart';
 import 'package:firebase_proj/screens/my_profile.dart';
@@ -62,7 +63,10 @@ class MyDrawer extends StatelessWidget {
               title: Text('My Plans',
                   style: TextStyle(fontSize: 20, color: Colors.white)),
               onTap: () {
-                Get.to(MyPlans(uid: Auth().currentUser!.uid));
+                Get.to(MyPlans(
+                  uid: Auth().currentUser!.uid,
+                  firestore: FirebaseFirestore.instance,
+                ));
                 //Navigator.pop(context);
               },
             ),
@@ -75,7 +79,10 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                 // context.read<FriendsPlanBloc>().add(
                 //     GetFriendsPlansEvent(Auth().currentUser!.uid, 'Pending'));
-                Get.to(FriendsPlans(uid: Auth().currentUser!.uid));
+                Get.to(FriendsPlans(
+                  uid: Auth().currentUser!.uid,
+                  firestore: FirebaseFirestore.instance,
+                ));
                 //Navigator.pop(context);
               },
             ),

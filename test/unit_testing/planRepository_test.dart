@@ -55,12 +55,12 @@ Future<void> main() async {
 
     await usersCollectionReference.doc(testUid).set({
       'plans': {
-        'FriendsPlans': [friendPlan1.id, friendPlan2.id]
+        'PendingPlans': [friendPlan1.id, friendPlan2.id]
       }
     });
 
     final friendsPlans =
-        await plansRepository.getFriendsPlans(testUid, 'FriendsPlans');
+        await plansRepository.getFriendsPlans(testUid, 'PendingPlans');
 
     expect(friendsPlans.length, 2);
 

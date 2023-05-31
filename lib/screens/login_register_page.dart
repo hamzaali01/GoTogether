@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_proj/screens/my_plans.dart';
 import 'package:firebase_proj/screens/my_profile.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,10 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         print("user signed innnnnnn");
-        Get.to(MyPlans(uid: Auth().currentUser!.uid));
+        Get.to(MyPlans(
+          uid: Auth().currentUser!.uid,
+          firestore: FirebaseFirestore.instance,
+        ));
       }
     });
   }

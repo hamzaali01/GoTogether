@@ -59,7 +59,10 @@ class _CreatePlanState extends State<CreatePlan> {
                         isPublic.toString(),
                         _selectedFriends);
             if (status == "Success") {
-              Get.to(MyPlans(uid: Auth().currentUser!.uid));
+              Get.to(MyPlans(
+                uid: Auth().currentUser!.uid,
+                firestore: FirebaseFirestore.instance,
+              ));
               GlobalSnackbar.show(context, 'Plan Created Successfully');
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
