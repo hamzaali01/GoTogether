@@ -10,7 +10,9 @@ import '../widgets/widgets.dart';
 
 class MyFriends extends StatefulWidget {
   final String uid;
-  MyFriends({required this.uid});
+  final FirebaseFirestore firestore;
+
+  MyFriends({required this.uid, required this.firestore});
 
   @override
   State<MyFriends> createState() => _MyFriendsState();
@@ -23,7 +25,8 @@ class _MyFriendsState extends State<MyFriends> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MyFriendsBloc()..add(GetMyFriendsEvent(widget.uid)),
+      create: (context) => MyFriendsBloc(firestore: widget.firestore)
+        ..add(GetMyFriendsEvent(widget.uid)),
       child: Scaffold(
         drawer: MyDrawer(
           uid: widget.uid,
@@ -105,8 +108,9 @@ class _MyFriendsState extends State<MyFriends> {
                                 child: ListTile(
                                   leading: CircleAvatar(
                                       radius: 28,
-                                      backgroundImage:
-                                          NetworkImage(pictureUrl!),
+                                      backgroundImage: pictureUrl != ''
+                                          ? NetworkImage(pictureUrl!)
+                                          : null,
                                       child: pictureUrl == ""
                                           ? Icon(Icons.person)
                                           : null),

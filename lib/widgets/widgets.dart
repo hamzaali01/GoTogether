@@ -93,7 +93,10 @@ class MyDrawer extends StatelessWidget {
               title: Text('My Friends',
                   style: TextStyle(fontSize: 20, color: Colors.white)),
               onTap: () {
-                Get.to(MyFriends(uid: Auth().currentUser!.uid));
+                Get.to(MyFriends(
+                  uid: Auth().currentUser!.uid,
+                  firestore: FirebaseFirestore.instance,
+                ));
                 //Navigator.pop(context);
               },
             ),
@@ -104,7 +107,10 @@ class MyDrawer extends StatelessWidget {
               title: Text('Public Events',
                   style: TextStyle(fontSize: 20, color: Colors.white)),
               onTap: () {
-                Get.to(PublicPlans(uid: Auth().currentUser!.uid));
+                Get.to(PublicPlans(
+                  uid: Auth().currentUser!.uid,
+                  firestore: FirebaseFirestore.instance,
+                ));
                 //Navigator.pop(context);
               },
             ),

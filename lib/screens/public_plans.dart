@@ -17,8 +17,9 @@ import '../widgets/widgets.dart';
 
 class PublicPlans extends StatefulWidget {
   final String uid;
+  final FirebaseFirestore firestore;
 
-  PublicPlans({required this.uid});
+  PublicPlans({required this.uid, required this.firestore});
 
   @override
   State<PublicPlans> createState() => _PublicPlansState();
@@ -36,8 +37,8 @@ class _PublicPlansState extends State<PublicPlans> {
   }
 
   Future<void> fetchPlans() async {
-    final plans = await PlansRepository(firestore: FirebaseFirestore.instance)
-        .getPublicPlans();
+    final plans =
+        await PlansRepository(firestore: widget.firestore).getPublicPlans();
     setState(() {
       allPlans = plans;
       displayedPlans = plans;
@@ -244,10 +245,9 @@ class _PublicPlansState extends State<PublicPlans> {
                                   Color.fromARGB(255, 35, 206, 41)),
                           onPressed: () async {
                             GlobalSnackbar.show(context, "Updating Going");
-                            await PlansRepository(
-                                    firestore: FirebaseFirestore.instance)
-                                .updatePlanStatus(Auth().currentUser!.uid,
-                                    planId, "ApprovedPlans");
+                            await PlansRepository(firestore: widget.firestore)
+                                .updatePlanStatus(
+                                    widget.uid, planId, "ApprovedPlans");
 
                             fetchPlans();
                             GlobalSnackbar.show(context, "Updated");
@@ -270,10 +270,8 @@ class _PublicPlansState extends State<PublicPlans> {
                                   Color.fromARGB(255, 206, 35, 35)),
                           onPressed: () async {
                             GlobalSnackbar.show(context, "Updating Going");
-                            await PlansRepository(
-                                    firestore: FirebaseFirestore.instance)
-                                .updatePlanStatus(
-                                    Auth().currentUser!.uid, planId, "");
+                            await PlansRepository(firestore: widget.firestore)
+                                .updatePlanStatus(widget.uid, planId, "");
                             fetchPlans();
                             GlobalSnackbar.show(context, "Updated");
                             // setState(() {
@@ -287,13 +285,13 @@ class _PublicPlansState extends State<PublicPlans> {
                   ),
                   onTap: () async {
                     //print("Opening Plan " + plans[index].data().toString());
-                    UserRepository(firestore: FirebaseFirestore.instance)
+                    UserRepository(firestore: widget.firestore)
                         .getUserById(creator)
                         .then((data) async {
                       dynamic creatorData = data.data();
-                      List<DocumentSnapshot> friendDocs = await UserRepository(
-                              firestore: FirebaseFirestore.instance)
-                          .getFriendsByUid(creator);
+                      List<DocumentSnapshot> friendDocs =
+                          await UserRepository(firestore: widget.firestore)
+                              .getFriendsByUid(creator);
                       final PendingIDs = plan?['Invited']['Pending'];
                       final ApprovedIDs = plan?['Invited']['Approved'];
                       final DeclinedIDs = plan?['Invited']['Declined'];
