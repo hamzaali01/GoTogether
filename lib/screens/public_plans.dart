@@ -66,11 +66,26 @@ class _PublicPlansState extends State<PublicPlans> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: MyDrawer(uid: widget.uid),
-      backgroundColor: Colors.purpleAccent,
+      backgroundColor: Color.fromARGB(255, 58, 23, 163),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: AppBar(
-          title: _isSearching ? _buildSearchField() : Text("Public Plans"),
+          title: _isSearching
+              ? _buildSearchField()
+              : title("Public Plans", [Colors.white, Colors.white]),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  // Colors.blue.shade800,
+                  Color.fromARGB(255, 106, 21, 180),
+                  Color.fromARGB(255, 117, 35, 249),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
           backgroundColor: Colors.deepPurple,
           centerTitle: true,
           actions: _buildActions(),
@@ -128,7 +143,7 @@ class _PublicPlansState extends State<PublicPlans> {
       return Center(
         child: Text(
           "No Public Plans Found!",
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       );
     } else {
@@ -180,11 +195,20 @@ class _PublicPlansState extends State<PublicPlans> {
             child: Container(
                 // height: 150,
                 decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(20)),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 86, 14, 255),
+                      Color.fromARGB(255, 255, 6, 72),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
                 child: ListTile(
                   // tileColor: Colors.red,
                   textColor: Colors.white,

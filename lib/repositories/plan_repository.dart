@@ -15,12 +15,6 @@ class PlansRepository {
   CollectionReference get plansCollection => firestore.collection('plans');
   CollectionReference get usersCollection => firestore.collection('users');
 
-  // final CollectionReference plansCollection =
-  //     FirebaseFirestore.instance.collection('plans');
-
-  // final CollectionReference usersCollection =
-  //     FirebaseFirestore.instance.collection('users');
-
   Future<List<DocumentSnapshot>> getPlansByUid(String uid) async {
     final querySnapshot = await plansCollection
         .where('creator', isEqualTo: uid)

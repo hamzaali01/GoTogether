@@ -1,12 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_proj/repositories/plan_repository.dart';
 import 'package:firebase_proj/repositories/user_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../mock.dart';
 
@@ -29,7 +24,6 @@ Future<void> main() async {
   });
 
   test('Get friends by UID', () async {
-    // Set up test data
     const testUid = 'test_uid';
     const friend1Uid = 'friend1_uid';
     const friend2Uid = 'friend2_uid';
@@ -42,21 +36,17 @@ Future<void> main() async {
     fakeFirestore.collection('users').doc(friend1Uid).set({});
     fakeFirestore.collection('users').doc(friend2Uid).set(friend2Data);
 
-    // Call the method being tested
     final friends = await userRepository.getFriendsByUid(testUid);
 
-    // Check the result
     expect(friends.length, 2);
     expect(friends[0].id, friend1Uid);
     expect(friends[1].id, friend2Uid);
   });
 
   test('Create user', () async {
-    // Set up test data
     myUser user = myUser("test_uid");
     await userRepository.createUser(user: user, name: 'John Doe');
 
-    // Check the result
     final userDocSnapshot =
         await fakeFirestore.collection('users').doc('test_uid').get();
     expect(userDocSnapshot.exists, true);
@@ -64,21 +54,16 @@ Future<void> main() async {
   });
 
   test('Generate unique username', () async {
-    // Call the method being tested
     final username = await userRepository.generateUniqueUsername();
 
-    // Check the result
     expect(username, isNotEmpty);
   });
 
   test('Add friend', () async {
-    // Set up test data
     const testUid = 'test_uid';
     const testUsername = 'test_username';
     const friendUid = 'friend_uid';
     const friendUsername = 'friend_username';
-
-    // fakeFirestore.collection('users').doc(friendUid).set(friendData);
 
     await fakeFirestore
         .collection('users')
@@ -89,10 +74,8 @@ Future<void> main() async {
         .doc(friendUid)
         .set({'friends': [], 'username': friendUsername});
 
-    // Call the method being tested
     final result = await userRepository.addFriend(friendUsername, testUid);
 
-    // Check the result
     expect(result, 'Friend Added Successfully');
 
     final userDocSnapshot =
@@ -105,16 +88,13 @@ Future<void> main() async {
   });
 
   test('Get user by ID', () async {
-    // Set up test data
     const testUid = 'test_uid';
     const userData = {'name': 'John Doe'};
 
     fakeFirestore.collection('users').doc(testUid).set(userData);
 
-    // Call the method being tested
     final userDocSnapshot = await userRepository.getUserById(testUid);
 
-    // Check the result
     expect(userDocSnapshot.exists, true);
     expect(userDocSnapshot['name'], 'John Doe');
   });

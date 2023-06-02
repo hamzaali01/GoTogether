@@ -1,17 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_proj/blocs/auth/auth_bloc.dart';
 import 'package:firebase_proj/screens/login_register_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../mock.dart';
-
-// class MockFirebaseAuth extends Mock implements Auth {}
-
-// class MockFirebaseUser extends Mock implements User {}
-
-// class MockPlanRepository extends Mock implements PlansRepository {}
-
-// class MockFriendsPlanBloc extends Mock implements FriendsPlanBloc {}
 
 Future<void> main() async {
   setupFirebaseAuthMocks();
@@ -28,7 +22,10 @@ Future<void> main() async {
     //     email: "hamza@hotmail.com", password: "hamza123");
     // Build the widget with authenticated user
     await tester.pumpWidget(GetMaterialApp(
-      home: LoginPage(),
+      home: BlocProvider(
+        create: (context) => AuthBloc(),
+        child: LoginPage(),
+      ),
     ));
 
     expect(find.text('LOGIN'), findsOneWidget);
@@ -38,7 +35,7 @@ Future<void> main() async {
     await tester.enterText(textFieldPassword, "hamza123");
 
     //var RegisterInsteadButton = find.text("Register instead");
-    var RegisterInsteadButton = find.byType(TextButton);
+    var RegisterInsteadButton = find.textContaining("Register instead");
     await tester.tap(RegisterInsteadButton);
 
     await tester.pumpAndSettle();
@@ -54,7 +51,7 @@ Future<void> main() async {
     // await tester.tap(SubmitButton);
     await tester.pumpAndSettle();
 
-    var SubmitButton = find.byKey(Key("SubmitLogin"));
+    var SubmitButton = find.text("Register");
     await tester.tap(SubmitButton);
   });
 }

@@ -11,9 +11,6 @@ class UserRepository {
   final FirebaseFirestore firestore;
   CollectionReference get usersCollection => firestore.collection('users');
 
-  // final CollectionReference usersCollection =
-  //     FirebaseFirestore.instance.collection('users');
-
   Future<List<DocumentSnapshot>> getFriendsByUid(String uid) async {
     final userDoc = await usersCollection.doc(uid).get();
     final friends =
@@ -54,14 +51,11 @@ class UserRepository {
   }
 
   Future<String> generateUniqueUsername() async {
-    var random = Random();
     var username = '';
     var usernameExists = true;
 
-    // Generate random username and check if it already exists in database
     while (usernameExists) {
-      username =
-          randomAlphaNumeric(8); // generate a 10-character alphanumeric string
+      username = randomAlphaNumeric(8);
       var snapshot =
           await usersCollection.where('username', isEqualTo: username).get();
       usernameExists = snapshot.docs.isNotEmpty;
@@ -80,12 +74,12 @@ class UserRepository {
       if (querySnapshot.size == 1) {
         final friendUid = querySnapshot.docs[0].id;
 
-        // add friendUid to current user's friends array
+        // adding friendUid to current user's friends array
         await usersCollection.doc(uid).update({
           'friends': FieldValue.arrayUnion([friendUid])
         });
 
-        // add current user's uid to friend's friends array
+        // adding current user's uid to friend's friends array
         await usersCollection.doc(friendUid).update({
           'friends': FieldValue.arrayUnion([uid])
         });

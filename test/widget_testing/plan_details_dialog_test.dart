@@ -17,14 +17,11 @@ Future<void> main() async {
 
   testWidgets('PlanDetailsDialog displays correctly',
       (WidgetTester tester) async {
-    // Create a fake Firestore instance
     final fakeFirestore = FakeFirebaseFirestore();
 
-    // Create a fake plan repository
     final planRepository = PlansRepository(firestore: fakeFirestore);
     final collectionReference = fakeFirestore.collection('plans');
 
-    // Create a MyPlansBloc instance
     final myPlansBloc = MyPlansBloc(firestore: fakeFirestore);
 
     final testUid = 'test_uid';
@@ -38,8 +35,6 @@ Future<void> main() async {
     });
 
     final plans = await planRepository.getPlansByUid(testUid);
-
-    // Define the necessary data for the PlanDetailsDialog widget
 
     final creatorData = {
       'name': 'John Doe',
@@ -56,7 +51,6 @@ Future<void> main() async {
     final index = 0;
     final friendDocs = [];
 
-    // Build the PlanDetailsDialog widget
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -84,7 +78,6 @@ Future<void> main() async {
 
     await tester.pumpAndSettle();
 
-    // Verify that the PlanDetailsDialog displays the correct data
     expect(find.text(title), findsOneWidget);
     expect(find.textContaining('Plan made by:'), findsOneWidget);
     expect(find.text("John Doe"), findsOneWidget);

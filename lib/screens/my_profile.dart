@@ -9,12 +9,17 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../blocs/auth/auth_bloc.dart';
+import '../blocs/my_profile/my_profile_bloc.dart';
+
 class MyProfile extends StatefulWidget {
   final String uid;
-  MyProfile({super.key, required this.uid});
+  final FirebaseFirestore firestore;
+  MyProfile({super.key, required this.uid, required this.firestore});
 
   @override
   State<MyProfile> createState() => _MyProfileState();
@@ -27,17 +32,30 @@ class _MyProfileState extends State<MyProfile> {
   void initState() {
     super.initState();
     FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user == null) {
-        // User is signed out, switch to login screen
-        Get.offAll(LoginPage());
-      } else {}
+      if (mounted) {
+        if (user == null) {
+          Get.offAll(LoginPage());
+          // BlocProvider.of<AuthBloc>(context).add(SignOutEvent());
+          // Get.offAll(LoginPage());
+        } else {
+          //
+        }
+      }
     });
 
-    _fetchImageUrl(); // call the method to fetch the imageUrl
+    // _fetchImageUrl(); // call the method to fetch the imageUrl
+  }
+
+  @override
+  void dispose() {
+    // Cancel any active streams or subscriptions here
+
+    super.dispose();
   }
 
   Future<void> signOut() async {
-    await Auth().signOut();
+    BlocProvider.of<AuthBloc>(context).add(SignOutEvent());
+    // await Auth().signOut();
     //Get.to(LoginPage());
   }
 
@@ -54,128 +72,113 @@ class _MyProfileState extends State<MyProfile> {
         ));
   }
 
-  Future<void> _fetchImageUrl() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final ref = FirebaseFirestore.instance.collection('users').doc(uid);
-    final doc = await ref.get();
-    if (doc.exists) {
-      setState(() {
-        _imageUrl = doc.get('profilePictureUrl');
-      });
-    }
-  }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  // }
-
-  File? _imageFile;
-  bool _isLoading = false;
-  String? _imageUrl;
-
-  Future<void> _selectImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
-
-    final userId = Auth().currentUser!.uid;
-    await _uploadImage(userId);
-  }
-
-  Future<void> _uploadImage(String userId) async {
-    if (_imageFile == null) {
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final fileName = 'profile_picture.jpg';
-    final destination = 'users/$userId/$fileName';
-
-    final storageRef = FirebaseStorage.instance.ref(destination);
-    final uploadTask = storageRef.putFile(_imageFile!);
-    final snapshot = await uploadTask.whenComplete(() {});
-    final url = await snapshot.ref.getDownloadURL();
-    setState(() {
-      _imageUrl = url; // save the image URL to the _imageUrl variable
-    });
-
-    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
-    await userRef.update({'profilePictureUrl': _imageUrl});
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Profile"),
-        centerTitle: true,
-      ),
-      drawer: MyDrawer(
-        uid: widget.uid,
-      ),
-      body: FutureBuilder(
-        future: UserRepository(firestore: FirebaseFirestore.instance)
-            .getUserById(user!.uid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (!snapshot.hasData) {
-            return Text('No profile found.');
-          } else {
-            final userData = snapshot.data!;
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  CircleAvatar(
-                      radius: 80.0,
-                      backgroundImage: NetworkImage(_imageUrl!),
-                      child: _imageUrl == ""
-                          ? Icon(
-                              Icons.person,
-                              size: 80,
-                            )
-                          : null),
-                  _isLoading
-                      ? CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: _selectImage,
-                          child: Text('Select Image'),
-                        ),
-                  Text(
-                    userData['name'],
-                    style: TextStyle(fontSize: 30),
-                  ),
-                  Text(
-                    "Your UserName is: " + userData['username'],
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  // Text("Your Username " + UserRepository().getUserById(user.uid)),
-                  _signOutButton(),
-                ],
+    return BlocProvider(
+      create: (context) => MyProfileBloc(firestore: widget.firestore)
+        ..add(GetMyProfileEvent(widget.uid)),
+      child: Scaffold(
+          appBar: AppBar(
+            title: title("My Profile", [Colors.white, Colors.white]),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    // Colors.blue.shade800,
+                    Colors.blue.shade800,
+                    Colors.blue.shade300,
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
               ),
-            );
-          }
-        },
-      ),
+            ),
+            centerTitle: true,
+          ),
+          drawer: MyDrawer(
+            uid: widget.uid,
+          ),
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  const Color.fromARGB(255, 114, 180, 255),
+                  Color.fromARGB(255, 255, 255, 255),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            child: BlocBuilder<MyProfileBloc, MyProfileState>(
+              builder: (context, state) {
+                if (state is LoadedState) {
+                  final userData = state.userData;
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        CircleAvatar(
+                            radius: 80.0,
+                            backgroundImage: userData['profilePictureUrl'] != ''
+                                ? NetworkImage(userData['profilePictureUrl'])
+                                : null,
+                            child: userData['profilePictureUrl'] == ""
+                                ? Icon(
+                                    Icons.person,
+                                    size: 80,
+                                  )
+                                : null),
+
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                          ),
+                          onPressed: () async {
+                            BlocProvider.of<MyProfileBloc>(context)
+                                .add(SelectPictureEvent(widget.uid));
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.image),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              Text('Select Image'),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          userData['name'],
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        Text(
+                          "Your UserName is: " + userData['username'],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        // Text("Your Username " + UserRepository().getUserById(user.uid)),
+                        _signOutButton(),
+                      ],
+                    ),
+                  );
+                } else if (state is LoadingState) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is ErrorState) {
+                  return Text(state.errorMessage);
+                } else {
+                  return Text("Unknown state");
+                }
+              },
+            ),
+          )),
     );
   }
 }

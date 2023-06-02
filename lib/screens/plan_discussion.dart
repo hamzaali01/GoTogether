@@ -117,37 +117,6 @@ class _PlanDiscussionState extends State<PlanDiscussion> {
                       return messageBubble(widget.name, message, false);
                   }).toList();
 
-                  // FutureBuilder<DocumentSnapshot>(
-                  //   future: UserRepository().getUserById(senderId),
-                  //   builder: (BuildContext context,
-                  //       AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  //     if (snapshot.connectionState == ConnectionState.done) {
-                  //       Map<String, dynamic> userData =
-                  //           snapshot.data!.data() as Map<String, dynamic>;
-                  //       final String senderName = userData['name'];
-                  //       if (Auth().currentUser!.uid == senderId)
-                  //         return messageBubble(senderName, message, true);
-                  //       else
-                  //         return messageBubble(senderName, message, false);
-                  //       // return ListTile(
-                  //       //   title: Text(senderName),
-                  //       //   subtitle: Text(message),
-                  //       //   trailing: Text(timestamp.toString()),
-                  //       // );
-                  //     } else if (snapshot.connectionState ==
-                  //         ConnectionState.waiting) {
-                  //       return Center(child: CircularProgressIndicator());
-                  //     } else {
-                  //       return Center(
-                  //         child: Text(
-                  //           "Error",
-                  //           style: TextStyle(fontSize: 10),
-                  //         ),
-                  //       );
-                  //     }
-                  //   },
-                  // );
-
                   return ListView(
                     reverse: false,
                     children: messageWidgets,

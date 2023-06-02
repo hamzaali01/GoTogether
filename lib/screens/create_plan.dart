@@ -14,7 +14,9 @@ import 'package:latlong2/latlong.dart';
 import '../repositories/plan_repository.dart';
 
 class CreatePlan extends StatefulWidget {
-  const CreatePlan({super.key});
+  final String uid;
+  final FirebaseFirestore firestore;
+  const CreatePlan({super.key, required this.uid, required this.firestore});
 
   @override
   State<CreatePlan> createState() => _CreatePlanState();
@@ -27,69 +29,71 @@ class _CreatePlanState extends State<CreatePlan> {
 
   final TextEditingController _controllerTitle = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
-  //final TextEditingController _controllerDateTime = TextEditingController();
   final TextEditingController _controllerLocation = TextEditingController();
   final TextEditingController _controllerLName = TextEditingController();
 
   List<String> _selectedFriends = [];
 
-  LatLng mapLocation = new LatLng(24.8607, 67.0011);
+  LatLng mapLocation = LatLng(24.8607, 67.0011);
 
   final _formKey = GlobalKey<FormState>();
 
   Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : '$errorMessage',
-        style: TextStyle(color: Colors.red));
+    return Text(
+      errorMessage == '' ? '' : '$errorMessage',
+      style: TextStyle(color: Colors.red),
+    );
   }
 
   Widget _submitButton() {
     return ElevatedButton(
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            GlobalSnackbar.show(context, 'Creating Plan');
-            String status =
-                await PlansRepository(firestore: FirebaseFirestore.instance)
-                    .createPlan(
-                        Auth().currentUser!.uid,
-                        _controllerTitle.text,
-                        _controllerLocation.text,
-                        mapLocation,
-                        _controllerDescription.text,
-                        _selectedDateTime.toString(),
-                        isPublic.toString(),
-                        _selectedFriends);
-            if (status == "Success") {
-              Get.to(MyPlans(
-                uid: Auth().currentUser!.uid,
-                firestore: FirebaseFirestore.instance,
-              ));
-              GlobalSnackbar.show(context, 'Plan Created Successfully');
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Failed to Create Plan'),
-                  duration: Duration(seconds: 2), // Optional duration
-                ),
-              );
-              setState(() {
-                errorMessage = "Some error occured when creating Plan";
-              });
-            }
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          GlobalSnackbar.show(context, 'Creating Plan');
+          String status =
+              await PlansRepository(firestore: widget.firestore).createPlan(
+            widget.uid,
+            _controllerTitle.text,
+            _controllerLocation.text,
+            mapLocation,
+            _controllerDescription.text,
+            _selectedDateTime.toString(),
+            isPublic.toString(),
+            _selectedFriends,
+          );
+          if (status == "Success") {
+            Get.to(MyPlans(
+              uid: widget.uid,
+              firestore: FirebaseFirestore.instance,
+            ));
+            GlobalSnackbar.show(context, 'Plan Created Successfully');
           } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to Create Plan'),
+                duration: Duration(seconds: 2), // Optional duration
+              ),
+            );
             setState(() {
-              GlobalSnackbar.show(
-                  context, 'Please fill the required fields correctly');
-              errorMessage = "Title and Location can not be empty";
+              errorMessage = "Some error occurred when creating the plan";
             });
           }
-        },
-        child: Text("Create"));
+        } else {
+          setState(() {
+            GlobalSnackbar.show(
+                context, 'Please fill the required fields correctly');
+            errorMessage = "Title and Location cannot be empty";
+          });
+        }
+      },
+      child: Text("Create"),
+    );
   }
 
   void onMarkerPositionChanged(LatLng markerPosition) {
-    // Use the marker position as needed
-    // print(markerPosition);
-    mapLocation = markerPosition;
+    setState(() {
+      mapLocation = markerPosition;
+    });
   }
 
   Widget form() {
@@ -97,10 +101,7 @@ class _CreatePlanState extends State<CreatePlan> {
       key: _formKey,
       child: Column(
         children: [
-          // _errorMessage(),
-          SizedBox(
-            height: 5,
-          ),
+          SizedBox(height: 5),
           TextFormField(
             controller: _controllerTitle,
             decoration: InputDecoration(
@@ -114,7 +115,7 @@ class _CreatePlanState extends State<CreatePlan> {
             ),
             validator: (value) {
               if (value!.isEmpty) {
-                return 'Please enter the Title';
+                return 'Please enter the title';
               }
               if (value.length > 35) {
                 return 'Title should be less than 36 characters';
@@ -138,32 +139,28 @@ class _CreatePlanState extends State<CreatePlan> {
             ),
             validator: (value) {
               if (value!.isEmpty) {
-                return 'Please enter Location ';
+                return 'Please enter the location';
               }
               return null;
             },
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           ElevatedButton(
-              onPressed: () {
-                // Get.to(MyMap());
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return ShowMap(
-                        onMarkerPositionChanged: onMarkerPositionChanged,
-                        initialPosition: mapLocation,
-                        type: "Select",
-                      );
-                    });
-              },
-              child: Text("Select Location on Map")),
-          //Text("mapLocation: " + mapLocation.toString()),
-          SizedBox(
-            height: 16,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return ShowMap(
+                    onMarkerPositionChanged: onMarkerPositionChanged,
+                    initialPosition: mapLocation,
+                    type: "Select",
+                  );
+                },
+              );
+            },
+            child: Text("Select Location on Map"),
           ),
+          SizedBox(height: 16),
           TextFormField(
             maxLines: 3,
             controller: _controllerDescription,
@@ -171,12 +168,6 @@ class _CreatePlanState extends State<CreatePlan> {
               labelText: 'Description',
               border: OutlineInputBorder(),
             ),
-            // validator: (value) {
-            //   if (value!.isEmpty) {
-            //     return 'Please enter some description';
-            //   }
-            //   return null;
-            // },
           ),
           SizedBox(height: 16),
           TextFormField(
@@ -197,8 +188,13 @@ class _CreatePlanState extends State<CreatePlan> {
                   );
                   if (selectedTime != null) {
                     setState(() {
-                      _selectedDateTime = DateTime(date.year, date.month,
-                          date.day, selectedTime.hour, selectedTime.minute);
+                      _selectedDateTime = DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        selectedTime.hour,
+                        selectedTime.minute,
+                      );
                     });
                   }
                 },
@@ -226,7 +222,6 @@ class _CreatePlanState extends State<CreatePlan> {
             ),
             child: CheckboxListTile(
               activeColor: Colors.green,
-              //   controlAffinity: ListTileControlAffinity.leading,
               title: Text('Public'),
               value: isPublic,
               onChanged: (bool? value) {
@@ -239,8 +234,8 @@ class _CreatePlanState extends State<CreatePlan> {
           SizedBox(height: 16),
           if (!isPublic!)
             FutureBuilder<List<DocumentSnapshot>>(
-              future: UserRepository(firestore: FirebaseFirestore.instance)
-                  .getFriendsByUid(Auth().currentUser!.uid),
+              future: UserRepository(firestore: widget.firestore)
+                  .getFriendsByUid(widget.uid),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return CircularProgressIndicator();
@@ -262,9 +257,9 @@ class _CreatePlanState extends State<CreatePlan> {
                   ),
                   child: MultiSelectDialogField<String>(
                     buttonIcon: Icon(Icons.person_add_alt),
-                    // separateSelectedItems: true,
                     items: friendItems,
                     searchable: true,
+                    //  listType: MultiSelectListType.CHIP,
                     title: Text("Select Friends"),
                     selectedItemsTextStyle: TextStyle(color: Colors.blue),
                     buttonText: Text("Select Friends"),
@@ -292,6 +287,20 @@ class _CreatePlanState extends State<CreatePlan> {
         centerTitle: true,
       ),
       body: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.black,
+            width: 1,
+          ),
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
         height: double.infinity,
         width: double.infinity,
         padding: const EdgeInsets.all(20),
@@ -300,14 +309,6 @@ class _CreatePlanState extends State<CreatePlan> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Padding(
-              //   padding: const EdgeInsets.all(50.0),
-              //   child: Text(
-              //     isLogin ? 'LOGIN' : 'REGISTER',
-              //     style: TextStyle(fontSize: 30),
-              //   ),
-              // ),
-              // _errorMessage(),
               form(),
             ],
           ),
@@ -316,32 +317,3 @@ class _CreatePlanState extends State<CreatePlan> {
     );
   }
 }
-
-
-
-
-          // TextFormField(
-          //   controller: _locationController,
-          //   decoration: InputDecoration(
-          //     labelText: 'Location',
-          //   ),
-          //   validator: (value) {
-          //     if (value!.isEmpty) {
-          //       return 'Please pick a location';
-          //     }
-          //     return null;
-          //   },
-          // ),
-          // Expanded(
-          //   child: GoogleMap(
-          //     initialCameraPosition: CameraPosition(
-          //       target: _initialLocation,
-          //       zoom: 15,
-          //     ),
-          //     markers: _markers,
-          //     onTap: _onMapTapped,
-          //     onMapCreated: (controller) {
-          //       _mapController = controller;
-          //     },
-          //   ),
-          // ),

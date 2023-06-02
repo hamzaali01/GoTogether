@@ -49,7 +49,6 @@ Future<void> main() async {
 
     await tester.pumpAndSettle();
 
-    // Verify loaded state
     expect(find.byType(CircularProgressIndicator), findsNothing);
 
     expect(find.byType(Card), findsNothing);

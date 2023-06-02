@@ -51,9 +51,10 @@ class MyDrawer extends StatelessWidget {
                 style: TextStyle(fontSize: 20, color: Colors.white),
               ),
               onTap: () {
-                Get.to(MyProfile(uid: uid));
-                //Navigator.pop(context);
-                // Handle item 1 tap
+                Get.to(MyProfile(
+                  uid: uid,
+                  firestore: FirebaseFirestore.instance,
+                ));
               },
             ),
           ),
@@ -236,6 +237,30 @@ class _MyMapState extends State<MyMap> {
       ),
     );
   }
+}
+
+Widget title(String text, List<Color> colors) {
+  return Text(
+    text,
+    style: TextStyle(
+      fontSize: 30,
+      fontWeight: FontWeight.bold,
+      fontStyle: FontStyle.italic,
+      foreground: Paint()
+        ..shader = LinearGradient(
+          colors: colors,
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ).createShader(Rect.fromLTWH(0, 0, 200, 70)),
+      shadows: [
+        Shadow(
+          color: Colors.black.withOpacity(0.6),
+          offset: Offset(0, 5),
+          blurRadius: 4,
+        ),
+      ],
+    ),
+  );
 }
 
 class GlobalSnackbar {

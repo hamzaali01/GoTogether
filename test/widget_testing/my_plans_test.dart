@@ -27,11 +27,6 @@ Future<void> main() async {
     final testUid = 'qf3ZAicM1ldmHPauNXYGA6ncvYl2';
     final testFriendUid = 'test_friend_uid';
 
-    // final friendPlan2 =
-    //     await collectionReference.add({'title': 'Friend Plan 2'});
-// final friendPlan1 =
-//         await collectionReference.add({'title': 'Friend Plan 1'});
-
     await usersCollectionReference.doc(testUid).set({
       'plans': {
         'PendingPlans': [],

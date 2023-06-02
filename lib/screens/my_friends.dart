@@ -28,11 +28,28 @@ class _MyFriendsState extends State<MyFriends> {
       create: (context) => MyFriendsBloc(firestore: widget.firestore)
         ..add(GetMyFriendsEvent(widget.uid)),
       child: Scaffold(
+        //  backgroundColor: Color.fromARGB(255, 255, 255, 255),
         drawer: MyDrawer(
           uid: widget.uid,
         ),
         appBar: AppBar(
-          title: Text("My Friends"),
+          title: title("My Friends", [Colors.white, Colors.white]),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  // Colors.blue.shade800,
+                  Color.fromARGB(255, 0, 255, 128),
+                  Color.fromARGB(255, 32, 192, 4),
+
+                  // Color.fromARGB(255, 171, 135, 255),
+                  // Color(0xFF5F53B7),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -79,6 +96,8 @@ class _MyFriendsState extends State<MyFriends> {
                       ),
                     ),
                     ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 0, 180, 81)),
                         onPressed: () async {
                           BlocProvider.of<MyFriendsBloc>(context).add(
                               AddFriendEvent(
@@ -88,6 +107,14 @@ class _MyFriendsState extends State<MyFriends> {
                         child: Text("Add Friend")),
                     SizedBox(
                       height: 20,
+                    ),
+                    Text(
+                      "Your Friends (" + friends.length.toString() + ")",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 10,
                     ),
                     SingleChildScrollView(
                       child: Container(
@@ -103,8 +130,20 @@ class _MyFriendsState extends State<MyFriends> {
                             final pictureUrl = friend?['profilePictureUrl'];
 
                             return Card(
-                              child: SizedBox(
-                                height: 60,
+                              elevation: 10,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      // Colors.blue.shade800,
+                                      Color.fromARGB(255, 46, 247, 66),
+                                      Color.fromARGB(255, 255, 255, 255),
+                                      Color.fromARGB(255, 46, 247, 66),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                ),
                                 child: ListTile(
                                   leading: CircleAvatar(
                                       radius: 28,
@@ -137,12 +176,12 @@ class _MyFriendsState extends State<MyFriends> {
                                                 child: CircleAvatar(
                                                   radius: 100,
                                                   backgroundImage:
-                                                      pictureUrl != null
+                                                      pictureUrl != ''
                                                           ? NetworkImage(
                                                               pictureUrl!)
                                                           : null,
-                                                  child: pictureUrl == null
-                                                      ? Icon(Icons.person_2)
+                                                  child: pictureUrl == ""
+                                                      ? Icon(Icons.person)
                                                       : null,
                                                 ),
                                               ),

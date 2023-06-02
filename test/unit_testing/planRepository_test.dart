@@ -3,7 +3,6 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_proj/repositories/plan_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../mock.dart';
@@ -100,7 +99,6 @@ Future<void> main() async {
     final testPlanId = 'test_plan_id';
     final testStatus = 'ApprovedPlans';
 
-    // Add a test plan and user data
     await plansCollectionReference.doc(testPlanId).set({
       'Invited': {
         'Pending': [testUid],
@@ -132,19 +130,14 @@ Future<void> main() async {
   });
 
   test('Create plan', () async {
-    // Create a fake instance of FirebaseFirestore
     final fakeFirestore = FakeFirebaseFirestore();
 
-    // Create a PlansRepository instance with the fake Firestore
     final plansRepository = PlansRepository(firestore: fakeFirestore);
 
-    // Create a collection reference for the 'plans' collection
     final plansCollectionReference = fakeFirestore.collection('plans');
 
-    // Create a collection reference for the 'users' collection
     final usersCollectionReference = fakeFirestore.collection('users');
 
-    // Define test data
     final testUid = 'test_uid';
     final testTitle = 'Test Plan';
     final testLocation = 'Test Location';
@@ -191,10 +184,8 @@ Future<void> main() async {
       testSelectedFriends,
     );
 
-    // Assert that the plan is created successfully
     expect(result, 'Success');
 
-    // Verify that the plan data is added correctly
     final querySnapshot = await plansCollectionReference.get();
     expect(querySnapshot.docs.length, 1);
     final createdPlanData = querySnapshot.docs.first.data();
@@ -209,7 +200,6 @@ Future<void> main() async {
         [testSelectedFriends[0], testSelectedFriends[1]]);
     expect(createdPlanData['creator'], testUid);
 
-    // Verify that the user data is updated correctly
     final userSnapshot = await usersCollectionReference.doc(testUid).get();
     final userPlansData = userSnapshot.data()!['plans'];
     final createdPlanId = querySnapshot.docs.first.id;
@@ -217,7 +207,6 @@ Future<void> main() async {
     expect(userPlansData['PendingPlans'], []);
     expect(userPlansData['ApprovedPlans'], []);
 
-    // Verify that the selected friends' data is updated correctly
     final friend1Snapshot =
         await usersCollectionReference.doc('friend1_uid').get();
     final friend2Snapshot =
@@ -229,22 +218,16 @@ Future<void> main() async {
   });
 
   test('Delete plan and remove from users', () async {
-    // Create a fake instance of FirebaseFirestore
     final fakeFirestore = FakeFirebaseFirestore();
 
-    // Create a PlansRepository instance with the fake Firestore
     final plansRepository = PlansRepository(firestore: fakeFirestore);
 
-    // Create a collection reference for the 'plans' collection
     final plansCollectionReference = fakeFirestore.collection('plans');
 
-    // Create a collection reference for the 'users' collection
     final usersCollectionReference = fakeFirestore.collection('users');
 
-    // Define a test plan ID
     final testPlanId = 'test_plan_id';
 
-    // Add test plans and user data
     await plansCollectionReference.doc(testPlanId).set({});
     await usersCollectionReference.doc('user1_uid').set({
       'plans': {
@@ -257,14 +240,11 @@ Future<void> main() async {
       }
     });
 
-    // Call the deletePlanAndRemoveFromUsers function
     final result =
         await plansRepository.deletePlanAndRemoveFromUsers(testPlanId);
 
-    // Assert that the plan is deleted successfully
     expect(result, 'Successfully Deleted Plan');
 
-    // Verify that the plan and user data are updated correctly
     final deletedPlanSnapshot =
         await plansCollectionReference.doc(testPlanId).get();
     final user1Snapshot = await usersCollectionReference.doc('user1_uid').get();

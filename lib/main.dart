@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import 'auth.dart';
+import 'blocs/auth/auth_bloc.dart';
 import 'blocs/friends_plans/friends_plan_bloc.dart';
 
 Future<void> main() async {
@@ -21,12 +22,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const LoginPage());
+    return BlocProvider(
+      create: (context) => AuthBloc(),
+      child: GetMaterialApp(
+          title: 'App Dev Project',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const LoginPage()),
+    );
   }
 
   //  MultiBlocProvider(

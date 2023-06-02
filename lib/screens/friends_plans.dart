@@ -27,21 +27,17 @@ class FriendsPlans extends StatefulWidget {
 
 class _FriendsPlansState extends State<FriendsPlans>
     with TickerProviderStateMixin {
-  // final User? user = Auth().currentUser;
-
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // FriendsPlanBloc()
-    //     .add(GetFriendsPlansEvent(Auth().currentUser!.uid, 'Pending'));
   }
 
   @override
   void dispose() {
-    _tabController.dispose(); // Dispose the TabController and its Ticker
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -79,10 +75,27 @@ class _FriendsPlansState extends State<FriendsPlans>
         ..add(GetFriendsPlansEvent(widget.uid, 'PendingPlans')),
       child: Scaffold(
           drawer: MyDrawer(uid: widget.uid),
-          backgroundColor: Colors.purple, //Color.fromARGB(255, 56, 12, 12),
+          backgroundColor: Color.fromARGB(
+              255, 255, 83, 83), //Color.fromARGB(255, 56, 12, 12),
           appBar: AppBar(
-            title: Text("Friends Plans"),
-            backgroundColor: Colors.black,
+            title: title("Friends Plans", [Colors.white, Colors.white]),
+            // backgroundColor: Colors.black,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    // Colors.blue.shade800,
+                    Color.fromARGB(255, 255, 100, 100),
+                    Color.fromARGB(255, 255, 47, 0),
+
+                    // Color.fromARGB(255, 171, 135, 255),
+                    // Color(0xFF5F53B7),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+              ),
+            ),
             centerTitle: true,
             bottom: PreferredSize(
               preferredSize: _tabBar.preferredSize,
@@ -205,6 +218,16 @@ class _PlansState extends State<Plans> {
                 child: Container(
                   // height: 150,
                   decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          // Colors.blue.shade800,
+                          _color,
+                          Color.fromARGB(255, 136, 1, 255),
+                          // _color,
+                        ],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                      ),
                       border: Border.all(
                         color: Colors.black,
                         width: 1,
