@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../blocs/auth/auth_bloc.dart';
-import '../widgets/widgets.dart';
+import '../common_widgets/widgets.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Image.asset(
-            'assets/images/google_logo3.png', // Replace with your Google logo image
+            'assets/images/google_logo3.png',
             height: 25,
             width: 25,
           ),
@@ -200,24 +200,29 @@ class _LoginPageState extends State<LoginPage> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                // Colors.blue.shade800,
                 Colors.blue.shade300,
                 Colors.blue.shade800,
-
-                // Color.fromARGB(255, 171, 135, 255),
-                // Color(0xFF5F53B7),
               ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
           ),
         ),
-        // backgroundColor:
-        //   const Color.fromARGB(255, 246, 100, 100), //Colors.blue,
-        // backgroundColor: Colors.blue,
         elevation: 10,
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthenticatedState) {
+            //  WidgetsBinding.instance!.addPostFrameCallback((_) {
+            Get.to(
+              MyPlans(
+                uid: Auth().currentUser!.uid,
+                firestore: FirebaseFirestore.instance,
+              ),
+            );
+            // });
+          }
+        },
         builder: (context, state) {
           if (state is UnAuthenticatedState) {
             return Column(
@@ -225,18 +230,10 @@ class _LoginPageState extends State<LoginPage> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      // image: DecorationImage(
-                      //   image: AssetImage(
-                      //       'assets/images/GoTogether.png'), // Replace 'assets/background_image.jpg' with your image path
-                      //   fit: BoxFit.scaleDown,
-                      // ),
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        // colors: [Colors.blue.shade300, Colors.blue.shade800],
                         colors: [
-                          // const Color.fromARGB(255, 246, 100, 100),
-
                           Colors.blue.shade300,
                           Colors.blue.shade800,
                           const Color.fromARGB(255, 246, 100, 100)
@@ -320,8 +317,8 @@ class _LoginPageState extends State<LoginPage> {
                             height: 130,
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/GoTogether.png'), // Replace 'assets/background_image.jpg' with your image path
+                                image:
+                                    AssetImage('assets/images/GoTogether.png'),
                                 fit: BoxFit.contain,
                               ),
                             ),
@@ -333,23 +330,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             );
-          } else if (state is AuthenticatedState) {
-            WidgetsBinding.instance!.addPostFrameCallback((_) {
-              Get.to(
-                MyPlans(
-                  uid: Auth().currentUser!.uid,
-                  firestore: FirebaseFirestore.instance,
-                ),
-              );
-            });
           } else if (state is AuthLoadingState) {
             return Center(
               child: CircularProgressIndicator(),
             );
           } else {
-            return Text("Unknown State");
+            return Text("");
           }
-          return Container();
         },
       ),
     );

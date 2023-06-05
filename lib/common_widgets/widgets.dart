@@ -152,7 +152,8 @@ class _ShowMapState extends State<ShowMap> {
         ElevatedButton(
           onPressed: () {
             Navigator.pop(context);
-            setState(() {});
+            print("closing");
+            // setState(() {});
           },
           child: Text('Close'),
         ),

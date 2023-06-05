@@ -11,7 +11,7 @@ class GetFriendsPlansEvent extends FriendsPlanEvent {
   final String userId;
   final String tabType; // Can be 'pending', 'approved', or 'declined'
 
-  const GetFriendsPlansEvent(this.userId, this.tabType);
+  const GetFriendsPlansEvent(this.userId, this.tabType); //
 
   @override
   List<Object> get props => [userId, tabType];

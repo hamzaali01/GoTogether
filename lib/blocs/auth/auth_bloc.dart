@@ -51,13 +51,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(UnAuthenticatedState(''));
       await Auth().signOut();
     });
-    on<UserChangedEvent>((event, emit) {
-      if (event.user != null) {
-        emit(AuthenticatedState());
-      } else {
-        emit(UnAuthenticatedState('Signed out'));
-      }
-    });
+    // on<UserChangedEvent>((event, emit) {
+    //   if (event.user != null) {
+    //     emit(AuthenticatedState());
+    //   } else {
+    //     emit(UnAuthenticatedState('Signed out'));
+    //   }
+    // });
     on<GoogleSignInEvent>((event, emit) async {
       User? user;
       try {

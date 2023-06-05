@@ -6,7 +6,7 @@ import 'package:firebase_proj/repositories/user_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/my_friends/my_friends_bloc.dart';
-import '../widgets/widgets.dart';
+import '../common_widgets/widgets.dart';
 
 class MyFriends extends StatefulWidget {
   final String uid;
@@ -226,7 +226,7 @@ class _MyFriendsState extends State<MyFriends> {
               } else if (state is ErrorState) {
                 return Text(state.errorMessage);
               } else {
-                return Text("Unknown State");
+                return Text("");
               }
             },
           ),

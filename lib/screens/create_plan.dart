@@ -1,5 +1,5 @@
 import 'package:firebase_proj/screens/my_plans.dart';
-import 'package:firebase_proj/widgets/widgets.dart';
+import 'package:firebase_proj/common_widgets/widgets.dart';
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';

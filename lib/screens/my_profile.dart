@@ -3,9 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_proj/repositories/user_repository.dart';
 import 'package:firebase_proj/screens/login_register_page.dart';
-import 'package:firebase_proj/widgets/widgets.dart';
+import 'package:firebase_proj/common_widgets/widgets.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,14 +41,10 @@ class _MyProfileState extends State<MyProfile> {
         }
       }
     });
-
-    // _fetchImageUrl(); // call the method to fetch the imageUrl
   }
 
   @override
   void dispose() {
-    // Cancel any active streams or subscriptions here
-
     super.dispose();
   }
 
@@ -174,7 +169,7 @@ class _MyProfileState extends State<MyProfile> {
                 } else if (state is ErrorState) {
                   return Text(state.errorMessage);
                 } else {
-                  return Text("Unknown state");
+                  return Text("");
                 }
               },
             ),

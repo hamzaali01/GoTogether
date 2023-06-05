@@ -75,7 +75,7 @@ Future<void> main() async {
     expect(find.text("You have no Plans here!"), findsNothing);
     expect(find.text("People Going: 1"), findsNothing);
     expect(find.text("People Going: 0"), findsOneWidget);
-    expect(find.byType(ElevatedButton), findsNWidgets(2));
+    expect(find.byType(ElevatedButton), findsNWidgets(1));
 
     expect(find.byIcon(Icons.search), findsOneWidget);
 

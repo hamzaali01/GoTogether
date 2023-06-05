@@ -82,7 +82,7 @@ Future<void> main() async {
     expect(find.byType(TabBar), findsOneWidget);
     expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(Plans), findsOneWidget);
-    //expect(find.byType(Plans), findsNWidgets(3));
+    // expect(find.byType(Plans), findsNothing);
 
     expect(find.text("Pending"), findsOneWidget);
     expect(find.text("Approved"), findsOneWidget);

@@ -19,7 +19,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -32,13 +31,4 @@ class MyApp extends StatelessWidget {
           home: const LoginPage()),
     );
   }
-
-  //  MultiBlocProvider(
-  //       providers: [
-  //         BlocProvider<FriendsPlanBloc>(
-  //           create: (context) => FriendsPlanBloc(),
-  //         ),
-  //       ],
-  //       child: const LoginPage(), //const Wrapper(),
-  //     ),
 }

@@ -41,7 +41,7 @@ dependencies:
   random_string: ^2.3.1
   email_validator: ^2.1.17
   get: ^4.6.5
-  firebase_ui_auth: ^1.2.1
+  # firebase_ui_auth: ^1.2.1
   image_picker: ^0.8.7+2
   firebase_storage: ^11.1.0
   google_sign_in: ^6.1.0
@@ -53,8 +53,8 @@ dependencies:
   flutter_map: ^4.0.0
   url_launcher: ^6.1.11
   geocoding: ^2.1.0
-  intl: ^0.18.0
-  flutter_datetime_picker: ^1.5.1
+  # intl: ^0.18.0
+  # flutter_datetime_picker: ^1.5.1
   flutter_datetime_picker_plus: ^2.0.1
 
 

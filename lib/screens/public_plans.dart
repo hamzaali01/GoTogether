@@ -2,7 +2,7 @@
 
 import 'package:firebase_proj/screens/create_plan.dart';
 import 'package:firebase_proj/screens/plan_discussion.dart';
-import 'package:firebase_proj/widgets/PlanDetails.dart';
+import 'package:firebase_proj/common_widgets/PlanDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../repositories/user_repository.dart';
-import '../widgets/widgets.dart';
+import '../common_widgets/widgets.dart';
 
 class PublicPlans extends StatefulWidget {
   final String uid;
@@ -184,6 +184,19 @@ class _PublicPlansState extends State<PublicPlans> {
           final planSnapshot = displayedPlans![index];
           final planId = planSnapshot.id;
           final _color = Colors.pinkAccent;
+          bool Going = false;
+          // if (plan!.length == 0) {
+          //   print("yo");
+          // }
+          //print(plan?['Invited']['Approved'][0]);
+          for (String uid in plan?['Invited']['Approved']) {
+            if (uid == widget.uid) {
+              Going = true;
+            } else {
+              Going = false;
+            }
+          }
+          // print(Going);
 
           return Card(
             color: _color,
@@ -263,47 +276,49 @@ class _PublicPlansState extends State<PublicPlans> {
                         height: 7,
                       ),
                       Row(mainAxisSize: MainAxisSize.min, children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Color.fromARGB(255, 35, 206, 41)),
-                          onPressed: () async {
-                            GlobalSnackbar.show(context, "Updating Going");
-                            await PlansRepository(firestore: widget.firestore)
-                                .updatePlanStatus(
-                                    widget.uid, planId, "ApprovedPlans");
+                        if (Going == false)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromARGB(255, 35, 206, 41)),
+                            onPressed: () async {
+                              GlobalSnackbar.show(context, "Updating Going");
+                              await PlansRepository(firestore: widget.firestore)
+                                  .updatePlanStatus(
+                                      widget.uid, planId, "ApprovedPlans");
 
-                            fetchPlans();
-                            GlobalSnackbar.show(context, "Updated");
+                              fetchPlans();
+                              GlobalSnackbar.show(context, "Updated");
 
-                            // setState(() {
-                            //   // displayedPlans![index] = planSnapshot;
-                            // });
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(7.0),
-                            child: Text('Going'),
+                              // setState(() {
+                              //   // displayedPlans![index] = planSnapshot;
+                              // });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(7.0),
+                              child: Text('Going'),
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Color.fromARGB(255, 206, 35, 35)),
-                          onPressed: () async {
-                            GlobalSnackbar.show(context, "Updating Going");
-                            await PlansRepository(firestore: widget.firestore)
-                                .updatePlanStatus(widget.uid, planId, "");
-                            fetchPlans();
-                            GlobalSnackbar.show(context, "Updated");
-                            // setState(() {
-                            //   //  displayedPlans![index] = updatedPlanSnapshot;
-                            // });
-                          },
-                          child: Text('Not Going'),
-                        ),
+                        // SizedBox(
+                        //   width: 10,
+                        // ),
+                        if (Going == true)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromARGB(255, 206, 35, 35)),
+                            onPressed: () async {
+                              GlobalSnackbar.show(context, "Updating Going");
+                              await PlansRepository(firestore: widget.firestore)
+                                  .updatePlanStatus(widget.uid, planId, "");
+                              fetchPlans();
+                              GlobalSnackbar.show(context, "Updated");
+                              // setState(() {
+                              //   //  displayedPlans![index] = updatedPlanSnapshot;
+                              // });
+                            },
+                            child: Text('Not Going'),
+                          ),
                       ]),
                     ],
                   ),

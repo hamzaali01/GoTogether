@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_proj/blocs/my_plans/my_plans_bloc.dart';
 import 'package:firebase_proj/repositories/plan_repository.dart';
-import 'package:firebase_proj/widgets/PlanDetails.dart';
+import 'package:firebase_proj/common_widgets/PlanDetails.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import '../mock.dart';

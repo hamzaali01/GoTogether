@@ -44,7 +44,7 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
     }
 
     final userId = event.userId;
-    await _uploadImage(userId);
+    //await _uploadImage(userId);
 
     //uploading the image
 
@@ -71,5 +71,5 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
     emit(LoadedState(userData));
   }
 
-  Future<void> _uploadImage(String userId) async {}
+  // Future<void> _uploadImage(String userId) async {}
 }

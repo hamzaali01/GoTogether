@@ -4,7 +4,7 @@ import 'package:firebase_proj/blocs/my_plans/my_plans_bloc.dart';
 import 'package:firebase_proj/repositories/user_repository.dart';
 import 'package:firebase_proj/screens/create_plan.dart';
 import 'package:firebase_proj/screens/plan_discussion.dart';
-import 'package:firebase_proj/widgets/PlanDetails.dart';
+import 'package:firebase_proj/common_widgets/PlanDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_proj/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../widgets/widgets.dart';
+import '../common_widgets/widgets.dart';
 
 class MyPlans extends StatefulWidget {
   final String uid;
@@ -310,7 +310,7 @@ class _MyPlansState extends State<MyPlans> {
               } else if (state is ErrorState) {
                 return Text('Error: ${state.errorMessage}');
               } else {
-                return Center(child: Text('Unknown state'));
+                return Center(child: Text(''));
               }
             },
           ),
