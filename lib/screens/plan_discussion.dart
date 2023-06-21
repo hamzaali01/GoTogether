@@ -36,7 +36,7 @@ class _PlanDiscussionState extends State<PlanDiscussion> {
           .collection('discussions')
           .add({
         'senderId': Auth().currentUser!.uid,
-        'senderName': widget.name,
+        'senderName': Auth().currentUser!.displayName,
         'message': messageText,
         'timestamp': Timestamp.now(),
       });
@@ -109,12 +109,13 @@ class _PlanDiscussionState extends State<PlanDiscussion> {
                     final String senderId = doc['senderId'];
                     final String message = doc['message'];
                     final Timestamp timestamp = doc['timestamp'];
+                    final String senderName = doc['senderName'];
                     // return messageBubble2(senderId, message, true, timestamp);
 
                     if (Auth().currentUser!.uid == senderId)
-                      return messageBubble(widget.name, message, true);
+                      return messageBubble(senderName, message, true);
                     else
-                      return messageBubble(widget.name, message, false);
+                      return messageBubble(senderName, message, false);
                   }).toList();
 
                   return ListView(
